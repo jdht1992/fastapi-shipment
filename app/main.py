@@ -6,7 +6,4 @@ app = FastAPI()
 
 @app.get("/")
 def get_shipment():
-    return {
-        "message": "Shipment service is running."
-}
-
+    return {"message": "Shipment service is running."}
