@@ -9,3 +9,7 @@ sqlalchemy
 black
 passlib[bcrypt]
 python-dotenv
+sqlmodel
+psycopg2
+rich    
+type-passlib
