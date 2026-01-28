@@ -6,3 +6,6 @@ flake8
 mypy
 pydantic-settings
 sqlalchemy
+black
+passlib[bcrypt]
+python-dotenv
