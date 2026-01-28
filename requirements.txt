@@ -4,3 +4,5 @@ requests
 uvicorn
 flake8
 mypy
+pydantic-settings
+sqlalchemy

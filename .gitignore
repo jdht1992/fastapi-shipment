@@ -34,3 +34,7 @@ archive.zip
 
 # ruff
 .ruff_cache/
+
+# SQLite database files
+*.db
+*.sqlite3
