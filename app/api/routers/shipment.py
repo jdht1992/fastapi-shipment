@@ -40,8 +40,6 @@ async def update_shipment(
 
 
 @router_shipment.delete("/shipment/{id}", response_model=None)
-async def delete_shipment(
-    id: int, service: ShipmentServiceDep
-) -> dict[str, str]:
+async def delete_shipment(id: int, service: ShipmentServiceDep) -> dict[str, str]:
 
     return await service.delete_shipment(id)

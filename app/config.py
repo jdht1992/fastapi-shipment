@@ -10,10 +10,9 @@ class DatabaseSettings(BaseSettings):
     POSTGRES_DB: str
 
     model_config = SettingsConfigDict(
-        env_file=".env",
-        env_ignore_empty=True,
-        extra="ignore"
+        env_file=".env", env_ignore_empty=True, extra="ignore"
     )
+
 
 @lru_cache
 def get_settings():
