@@ -16,6 +16,7 @@ pyjwt
 ptpython
 asyncpg
 passlib==1.7.4
+types-passlib==1.7.7.20250602
 bcrypt==3.2.2
 redis==4.0.0
 types-redis==4.6.0.20241004
