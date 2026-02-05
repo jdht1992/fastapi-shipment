@@ -7,9 +7,14 @@ mypy
 pydantic-settings
 sqlalchemy
 black
-passlib[bcrypt]
+python-jose
 python-dotenv
 sqlmodel
 psycopg2
 rich    
-types-passlib
+pyjwt
+ptpython
+asyncpg
+passlib==1.7.4 
+bcrypt==3.2.2
+redis==4.0.0

@@ -7,6 +7,8 @@ from app.database.session import create_all_table
 
 from app.api.router import master_router
 
+from scalar_fastapi import get_scalar_api_reference
+
 
 @asynccontextmanager
 async def lifespan_handler(app: FastAPI):
@@ -17,5 +19,11 @@ async def lifespan_handler(app: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan_handler)
+
+
+@app.get("/scalar")
+def get_scalar_docs():
+    return get_scalar_api_reference(openapi_url=app.openapi_url, title="Scalar API")
+
 
 app.include_router(master_router)
