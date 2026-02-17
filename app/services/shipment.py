@@ -1,7 +1,8 @@
 from datetime import datetime, timedelta
+from uuid import UUID
 from fastapi import HTTPException, status
 
-from app.database.models import Shipment, ShipmentStatus
+from app.database.models import Seller, Shipment, ShipmentStatus
 from app.schemas.shipment import ShipmentCreate, ShipmentUpdate
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -10,11 +11,13 @@ class ShipmentService:
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    async def add_shipment(self, shipment_create: ShipmentCreate) -> Shipment:
+    async def add_shipment(self, shipment_create: ShipmentCreate, seller: Seller) -> Shipment:
         new_shipment = Shipment(
             **shipment_create.model_dump(),
             status=ShipmentStatus.placed,
             estimated_delivery=datetime.now() + timedelta(days=3),
+            seller_id=seller.id,
+            #seller=seller
         )
         self.session.add(new_shipment)
         await self.session.commit()
@@ -22,7 +25,7 @@ class ShipmentService:
 
         return new_shipment
 
-    async def get_shipment(self, shipment_id: int) -> Shipment | None:
+    async def get_shipment(self, shipment_id: UUID) -> Shipment | None:
         return await self.session.get(Shipment, shipment_id)
 
     async def update_shipment(

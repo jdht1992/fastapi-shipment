@@ -1,3 +1,4 @@
+from uuid import UUID
 from fastapi import APIRouter, HTTPException, status
 
 from app.database.models import Shipment
@@ -7,15 +8,14 @@ from app.schemas.shipment import ShipmentCreate, ShipmentUpdate
 router_shipment = APIRouter(prefix="/shipment", tags=["Shipment"])
 
 
-@router_shipment.get("/{id}", response_model=Shipment)
-async def get_shipment(id: int, _: SellerDep, service: ShipmentServiceDep) -> Shipment:
-    shipment = await service.get_shipment(id)
-    print("*20")
+@router_shipment.get("/{uuid}")
+async def get_shipment(uuid: UUID, _: SellerDep, service: ShipmentServiceDep) -> Shipment:
+    shipment = await service.get_shipment(uuid)
 
     if shipment is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Given id: {id} doesn't exist",
+            detail=f"Given id: {uuid} doesn't exist",
         )
 
     return shipment
@@ -25,10 +25,10 @@ async def get_shipment(id: int, _: SellerDep, service: ShipmentServiceDep) -> Sh
 
 @router_shipment.post("/", response_model=None)
 async def create_shipment(
-    seller: SellerDep, shipment_create: ShipmentCreate, service: ShipmentServiceDep
+    seller: SellerDep, shipment: ShipmentCreate, service: ShipmentServiceDep
 ) -> Shipment:
 
-    return await service.add_shipment(shipment_create)
+    return await service.add_shipment(shipment, seller)
 
 
 @router_shipment.patch("/shipment/{id}", response_model=Shipment)

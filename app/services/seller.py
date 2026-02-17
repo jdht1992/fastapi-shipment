@@ -47,7 +47,7 @@ class SellerService:
             data={
                 "user": {
                     "name": seller.name,
-                    "email": seller.email,
+                    "id": str(seller.id),
                 }
             }
         )

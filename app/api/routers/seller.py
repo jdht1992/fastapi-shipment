@@ -17,13 +17,13 @@ async def register_seller(seller: SellerCreate, service: SellerServiceDep) -> Se
 
 
 @router_seller.post("/token")
-async def login_for_access_token(
+async def login_seller(
     service: SellerServiceDep,
     request_form: Annotated[OAuth2PasswordRequestForm, Depends()],
 ) -> Token:
     token = await service.token(request_form.username, request_form.password)
 
-    return Token(access_token=token, token_type="JWT")
+    return Token(access_token=token, token_type="jwt")
 
 
 @router_seller.get("/logout")
