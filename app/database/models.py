@@ -20,13 +20,7 @@ class Shipment(SQLModel, table=True):
     __tablename__ = "shipment"
 
     # id: int | None = Field(default=None, primary_key=True)
-    id: UUID = Field(
-        sa_column=Column(
-            postgresql.UUID,
-            default=uuid4,
-            primary_key=True
-        )
-    )
+    id: UUID = Field(sa_column=Column(postgresql.UUID, default=uuid4, primary_key=True))
     content: str
     weight: float = Field(le=25)
     destination: int
@@ -35,8 +29,7 @@ class Shipment(SQLModel, table=True):
 
     seller_id: UUID = Field(foreign_key="seller.id")
     seller: "Seller" = Relationship(
-        back_populates="shipments",
-        sa_relationship_kwargs={"lazy": "selectin"}
+        back_populates="shipments", sa_relationship_kwargs={"lazy": "selectin"}
     )
 
 
@@ -48,7 +41,7 @@ class Seller(SQLModel, table=True):
             postgresql.UUID,
             # postgresql.UUID(as_uuid=True),
             default=uuid4,
-            primary_key=True
+            primary_key=True,
         )
     )
     name: str
@@ -57,6 +50,5 @@ class Seller(SQLModel, table=True):
     password_hash: str
 
     shipments: list[Shipment] = Relationship(
-        back_populates="seller",
-        sa_relationship_kwargs={"lazy": "selectin"}
+        back_populates="seller", sa_relationship_kwargs={"lazy": "selectin"}
     )

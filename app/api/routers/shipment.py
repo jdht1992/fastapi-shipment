@@ -9,7 +9,9 @@ router_shipment = APIRouter(prefix="/shipment", tags=["Shipment"])
 
 
 @router_shipment.get("/{uuid}")
-async def get_shipment(uuid: UUID, _: SellerDep, service: ShipmentServiceDep) -> Shipment:
+async def get_shipment(
+    uuid: UUID, _: SellerDep, service: ShipmentServiceDep
+) -> Shipment:
     shipment = await service.get_shipment(uuid)
 
     if shipment is None:

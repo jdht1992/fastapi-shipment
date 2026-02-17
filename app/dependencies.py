@@ -39,10 +39,9 @@ async def get_access_token(token: Annotated[str, Depends(oauth2_scheme)]) -> dic
 
 
 async def get_current_seller(
-       token_data: Annotated[dict, Depends(get_access_token)],
-       session: SessionDep
+    token_data: Annotated[dict, Depends(get_access_token)], session: SessionDep
 ):
-   return await session.get(Seller, UUID(token_data["user"]["id"]))
+    return await session.get(Seller, UUID(token_data["user"]["id"]))
 
 
 # async def get_current_seller(
@@ -53,7 +52,7 @@ async def get_current_seller(
 #         raise HTTPException(
 #             status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid access token"
 #         )
-# 
+#
 #     result = await session.execute(select(Seller).where(Seller.email == email))
 #     seller = result.scalar()
 #     if seller is None:
@@ -61,7 +60,7 @@ async def get_current_seller(
 #             status_code=status.HTTP_404_NOT_FOUND,
 #             detail=f"Seller with email: {email} not found",
 #         )
-# 
+#
 #     return seller
 
 
