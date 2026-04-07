@@ -6,12 +6,23 @@ from app.database.models import Seller, Shipment, ShipmentStatus
 from app.schemas.shipment import ShipmentCreate, ShipmentUpdate
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.services.base import BaseService
+from app.services.delivery_partner import DeliveryPartnerService
 
-class ShipmentService:
-    def __init__(self, session: AsyncSession):
-        self.session = session
 
-    async def add_shipment(
+class ShipmentService(BaseService):
+    def __init__(
+        self, 
+        session: AsyncSession, 
+        partner_service: DeliveryPartnerService
+    ):
+        super().__init__(Shipment, session)
+        self.partner_service = partner_service
+
+    async def get(self, id: UUID) -> Shipment | None:
+        return await self._get(id)
+
+    async def add(
         self, shipment_create: ShipmentCreate, seller: Seller
     ) -> Shipment:
         new_shipment = Shipment(
@@ -21,52 +32,38 @@ class ShipmentService:
             seller_id=seller.id,
             # seller=seller
         )
-        self.session.add(new_shipment)
-        await self.session.commit()
-        await self.session.refresh(new_shipment)
+        partner = await self.partner_service.assign_shipment(new_shipment)
+        new_shipment.delivery_partner_id = partner.id
+        return await self._add(new_shipment)
 
-        return new_shipment
-
-    async def get_shipment(self, shipment_id: UUID) -> Shipment | None:
-        return await self.session.get(Shipment, shipment_id)
-
-    async def update_shipment(
-        self, shipment_id: int, shipment_update: ShipmentUpdate
+    async def update(
+        self, id: UUID, shipment_update: ShipmentUpdate
     ) -> Shipment:
-        update = shipment_update.model_dump(exclude_none=True)
 
-        if not update:
+        if not (update_data := shipment_update.model_dump(exclude_none=True)):
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="None data provided for update",
             )
 
-        shipment = await self.session.get(Shipment, shipment_id)
-
-        if shipment is None:
+        if (shipment := await self._get(id)) is None:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Given id doesn't exist",
             )
 
-        shipment.sqlmodel_update(update)
+        shipment.sqlmodel_update(update_data)
 
-        self.session.add(shipment)
-        await self.session.commit()
-        await self.session.refresh(shipment)
+        return await self._update(shipment)
 
-        return shipment
+    async def delete(self, id: UUID) -> dict[str, str]:
 
-    async def delete_shipment(self, shipment_id: int) -> dict[str, str]:
-        shipment = await self.session.get(Shipment, shipment_id)
-
-        if shipment is None:
+        if (shipment := await self._get(id)) is None:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Given id doesn't exist",
             )
 
-        await self.session.delete(shipment)
-        await self.session.commit()
+        await self._delete(shipment)
 
-        return {"detail": f"Shipment with id: {shipment_id} was deleted successfully"}
+        return {"detail": f"Shipment with id: {id} was deleted successfully"}

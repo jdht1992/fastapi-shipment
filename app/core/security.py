@@ -6,7 +6,8 @@ from app.utils import decode_access_token
 
 from fastapi import Depends, status
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/seller/token")
+oauth2_scheme_seller = OAuth2PasswordBearer(tokenUrl="/seller/token")
+oauth2_scheme_partner = OAuth2PasswordBearer(tokenUrl="/partner/token")
 
 
 class AccessTokenBearer(HTTPBearer):
@@ -25,4 +26,5 @@ class AccessTokenBearer(HTTPBearer):
 
 
 access_token_bearer = AccessTokenBearer()
+
 Annotated[dict, Depends(access_token_bearer)]

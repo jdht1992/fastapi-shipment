@@ -2,7 +2,7 @@ from uuid import UUID
 from fastapi import APIRouter, HTTPException, status
 
 from app.database.models import Shipment
-from app.dependencies import SellerDep, ShipmentServiceDep
+from app.dependencies import DeliveryPartnerDep, SellerDep, ShipmentServiceDep
 from app.schemas.shipment import ShipmentCreate, ShipmentUpdate
 
 router_shipment = APIRouter(prefix="/shipment", tags=["Shipment"])
@@ -12,7 +12,7 @@ router_shipment = APIRouter(prefix="/shipment", tags=["Shipment"])
 async def get_shipment(
     uuid: UUID, _: SellerDep, service: ShipmentServiceDep
 ) -> Shipment:
-    shipment = await service.get_shipment(uuid)
+    shipment = await service.get(uuid)
 
     if shipment is None:
         raise HTTPException(
@@ -30,18 +30,29 @@ async def create_shipment(
     seller: SellerDep, shipment: ShipmentCreate, service: ShipmentServiceDep
 ) -> Shipment:
 
-    return await service.add_shipment(shipment, seller)
+    return await service.add(shipment, seller)
 
 
 @router_shipment.patch("/shipment/{id}", response_model=Shipment)
 async def update_shipment(
-    id: int, shipment_update: ShipmentUpdate, service: ShipmentServiceDep
+    id: UUID, 
+    shipment_update: ShipmentUpdate,
+    partner: DeliveryPartnerDep, 
+    service: ShipmentServiceDep
 ) -> Shipment:
+    
+    update = shipment_update.model_dump(exclude_none=True)
 
-    return await service.update_shipment(id, shipment_update)
+    if not update:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="No data provided to update"
+        )
+
+    return await service.update(id, shipment_update)
 
 
 @router_shipment.delete("/shipment/{id}", response_model=None)
-async def delete_shipment(id: int, service: ShipmentServiceDep) -> dict[str, str]:
+async def delete_shipment(id: UUID, service: ShipmentServiceDep) -> dict[str, str]:
 
-    return await service.delete_shipment(id)
+    return await service.delete(id)
